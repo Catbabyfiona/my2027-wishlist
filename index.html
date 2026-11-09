@@ -642,8 +642,9 @@ function yearPhase() {
 function renderHeader() {
   const now = new Date();
   const weekDays = ['日','一','二','三','四','五','六'];
-  document.getElementById('dateText').textContent =
-    `${now.getFullYear()}年 ${now.getMonth()+1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
+  document.getElementById('dateText').innerHTML =
+    `${now.getFullYear()}年 ${now.getMonth()+1}月${now.getDate()}日` +
+    `<div style="font-size:18px;color:#8A7A66;margin-top:2px;">星期${weekDays[now.getDay()]}</div>`;
   const h = now.getHours();
   let greet = '早上好，今天也是新的一天';
   if (h >= 11 && h < 14) greet = '中午好，记得吃饭';
