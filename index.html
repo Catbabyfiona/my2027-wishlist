@@ -559,7 +559,7 @@
       </div>
       <div class="form-row">
         <label>分类</label>
-        <select id="f_category">
+        <select id="f_category" onchange="onCategoryChange()">
           <option>健康美丽</option>
           <option>学习成长</option>
           <option>职业发展</option>
@@ -568,7 +568,9 @@
           <option>记录生活</option>
           <option>新的体验</option>
           <option>财务攒钱</option>
+          <option value="__custom__">+ 自定义分类…</option>
         </select>
+        <input id="f_category_custom" placeholder="输入新分类名，例：猫咪、旅行、语言" style="display:none; margin-top:8px;">
       </div>
       <div class="form-row">
         <label>频率</label>
@@ -834,14 +836,29 @@ function onPeriodChange() {
   document.getElementById('weeklyRow').style.display =
     document.getElementById('f_period').value === 'weekly' ? 'block' : 'none';
 }
+function onCategoryChange() {
+  const v = document.getElementById('f_category').value;
+  document.getElementById('f_category_custom').style.display =
+    v === '__custom__' ? 'block' : 'none';
+}
 function saveWish() {
   const title = document.getElementById('f_title').value.trim();
   if (!title) { alert('愿望得先有个名字呀'); return; }
   const target = parseInt(document.getElementById('f_target').value) || 1;
+  let category = document.getElementById('f_category').value;
+  if (category === '__custom__') {
+    category = document.getElementById('f_category_custom').value.trim();
+    if (!category) { alert('先填一下新分类叫什么'); return; }
+    // 把新分类加进下拉选项，下次直接选
+    const sel = document.getElementById('f_category');
+    const opt = document.createElement('option');
+    opt.value = category; opt.textContent = category;
+    sel.insertBefore(opt, sel.lastElementChild);
+  }
   data.wishes.push({
     id: 'w' + Date.now(),
     title,
-    category: document.getElementById('f_category').value,
+    category,
     period: document.getElementById('f_period').value,
     target,
     startDate: `${YEAR}-01-01`,
@@ -854,6 +871,9 @@ function saveWish() {
   document.getElementById('f_title').value = '';
   document.getElementById('f_note').value = '';
   document.getElementById('f_target').value = '';
+  document.getElementById('f_category_custom').value = '';
+  document.getElementById('f_category').selectedIndex = 0;
+  document.getElementById('f_category_custom').style.display = 'none';
   renderToday(); renderAll(); renderStats();
   switchTab('today');
 }
