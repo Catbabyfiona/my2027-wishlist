@@ -370,8 +370,75 @@
     font-family: -apple-system, sans-serif;
   }
 </style>
+<style>
+  /* 开屏 */
+  .splash {
+    position: fixed; inset: 0;
+    background: #FAF6EC;
+    background-image:
+      linear-gradient(rgba(180,160,130,0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,160,130,0.10) 1px, transparent 1px);
+    background-size: 28px 28px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.6s ease;
+    cursor: pointer;
+  }
+  .splash.hide { opacity: 0; pointer-events: none; }
+  .splash .splash-sun { width: 70px; margin-bottom: 30px; }
+  .splash .splash-title {
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 44px;
+    color: #3E3228;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .splash .splash-title .yr { color: #E08E6D; }
+  .splash .splash-sub {
+    margin-top: 24px;
+    font-family: "Long Cang", cursive;
+    font-size: 22px;
+    color: #8A7A66;
+  }
+  .splash .splash-brand {
+    position: absolute;
+    bottom: 60px;
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 16px;
+    color: #B89B7A;
+    letter-spacing: 4px;
+  }
+  .splash .splash-tape {
+    position: absolute;
+    top: 60px; right: 30px;
+    width: 90px; height: 28px;
+    background: rgba(245,200,200,0.5);
+    transform: rotate(6deg);
+  }
+</style>
 </head>
 <body>
+
+<!-- 开屏 -->
+<div class="splash" id="splash" onclick="dismissSplash()">
+  <div class="splash-tape"></div>
+  <svg class="splash-sun" viewBox="0 0 60 60" fill="none">
+    <circle cx="30" cy="30" r="12" stroke="#D4A574" stroke-width="2" fill="#F2D8B5"/>
+    <g stroke="#D4A574" stroke-width="2" stroke-linecap="round">
+      <line x1="30" y1="6" x2="30" y2="13"/><line x1="30" y1="47" x2="30" y2="54"/>
+      <line x1="6" y1="30" x2="13" y2="30"/><line x1="47" y1="30" x2="54" y2="30"/>
+      <line x1="13" y1="13" x2="18" y2="18"/><line x1="42" y1="42" x2="47" y2="47"/>
+      <line x1="47" y1="13" x2="42" y2="18"/><line x1="18" y1="42" x2="13" y2="47"/>
+    </g>
+  </svg>
+  <div class="splash-title"><span class="yr">2027</span><br>把日子过成愿望的样子</div>
+  <div class="splash-sub">✿ 岁愿 · 你的年度手账 ✿</div>
+  <div class="splash-brand">MY 2027 · SUI YUAN</div>
+</div>
+
 <div class="phone">
   <div class="tape"></div>
 
@@ -831,6 +898,18 @@ renderHeader();
 renderToday();
 renderAll();
 renderStats();
+
+// ============ 开屏：只在第一次打开时显示 ============
+function dismissSplash() {
+  const s = document.getElementById('splash');
+  if (s) s.classList.add('hide');
+  localStorage.setItem('splash_shown_v1', '1');
+}
+if (localStorage.getItem('splash_shown_v1') === '1') {
+  document.getElementById('splash').style.display = 'none';
+} else {
+  setTimeout(dismissSplash, 2500);
+}
 </script>
 </body>
 </html>
