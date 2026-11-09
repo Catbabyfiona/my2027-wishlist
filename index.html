@@ -697,11 +697,11 @@ function renderToday() {
         <div class="countdown-sub">天后，一起翻开 ${YEAR}</div>
       </div>`;
     if (data.wishes.length > 0) {
-      html += `<div class="section-label">已写好的愿望（2027年1月1日开始打卡）</div>`;
+      html += `<div class="section-label">已写好的愿望</div>`;
       data.wishes.slice(0, 8).forEach(w => {
         html += `
           <div class="wish-item" style="opacity:0.75">
-            <div style="width:6px;height:6px;border-radius:50%;background:#C9B89B;flex-shrink:0;margin-top:14px;"></div>
+            <div class="check-circle" onclick="notYet()">·</div>
             <div class="wish-body">
               <div class="wish-row">
                 <div class="wish-title">${escapeHtml(w.title)}</div>
@@ -744,6 +744,9 @@ function renderToday() {
   list.innerHTML = html;
 }
 
+function notYet() {
+  alert('愿望已经存好啦 ✿\n2027年1月1日开始打卡，等着哦');
+}
 function toggleCheck(id) {
   const wish = data.wishes.find(w => w.id === id);
   if (!wish) return;
