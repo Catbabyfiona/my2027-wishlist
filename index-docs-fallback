@@ -1,0 +1,836 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<meta name="theme-color" content="#FAF6EC">
+<title>My 2027 · 岁愿</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Long+Cang&family=Ma+Shan+Zheng&display=swap" rel="stylesheet">
+<style>
+  * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: "Long Cang", "Ma Shan Zheng", -apple-system, sans-serif;
+    background: #E8DFC9;
+    color: #4A3F35;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+  }
+  .phone {
+    width: 100%;
+    max-width: 420px;
+    min-height: 100vh;
+    background: #FAF6EC;
+    /* 方格纸 */
+    background-image:
+      linear-gradient(rgba(180,160,130,0.10) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(180,160,130,0.10) 1px, transparent 1px);
+    background-size: 28px 28px;
+    box-shadow: 0 0 40px rgba(0,0,0,0.08);
+    position: relative;
+    padding-bottom: 90px;
+    overflow-x: hidden;
+  }
+  /* 顶部 */
+  header {
+    padding: 40px 28px 10px;
+    position: relative;
+  }
+  .date-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+  }
+  .date-text {
+    font-family: "Long Cang", cursive;
+    font-size: 30px;
+    color: #3E3228;
+    letter-spacing: 1px;
+    line-height: 1.2;
+  }
+  .brand-row {
+    margin-top: 6px;
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 20px;
+    color: #B89B7A;
+    letter-spacing: 3px;
+  }
+  .brand-row .yr { color: #E08E6D; }
+  /* 小太阳 */
+  .sun {
+    width: 44px; height: 44px;
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+  /* 粉色和纸胶带 */
+  .tape {
+    position: absolute;
+    top: 78px; right: 24px;
+    width: 96px; height: 30px;
+    background: rgba(245, 200, 200, 0.55);
+    transform: rotate(6deg);
+    pointer-events: none;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.04);
+  }
+  .greeting {
+    font-family: "Long Cang", cursive;
+    font-size: 20px;
+    color: #8A7A66;
+    margin-top: 14px;
+  }
+  /* 年度进度 */
+  .year-progress {
+    margin-top: 16px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: "Long Cang", cursive;
+    font-size: 15px;
+    color: #8A7A66;
+  }
+  .year-bar {
+    flex: 1;
+    height: 8px;
+    background: rgba(180,160,130,0.18);
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .year-bar-fill {
+    height: 100%;
+    background: #C9B89B;
+    border-radius: 4px;
+    transition: width 0.6s ease;
+  }
+  /* 分隔线 */
+  .header-divider {
+    margin: 18px 28px 0;
+    border: none;
+    border-top: 1px solid rgba(74,63,53,0.25);
+  }
+  /* Tab 内容 */
+  .tab-content { display: none; padding: 16px 28px; }
+  .tab-content.active { display: block; }
+
+  /* 愿望条目 */
+  .wish-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 22px 0;
+    border-bottom: 2px dashed rgba(180,140,100,0.35);
+  }
+  .check-circle {
+    flex-shrink: 0;
+    width: 30px; height: 30px;
+    border: 1.5px solid #B89B7A;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+    background: transparent;
+    color: transparent;
+    font-size: 18px;
+    line-height: 1;
+  }
+  .check-circle.checked {
+    color: #8A6E4E;
+    border-color: #B89B7A;
+  }
+  .wish-body { flex: 1; min-width: 0; }
+  .wish-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    gap: 10px;
+  }
+  .wish-title {
+    font-family: "Long Cang", cursive;
+    font-size: 26px;
+    color: #3E3228;
+    line-height: 1.3;
+  }
+  .wish-day {
+    font-family: "Long Cang", cursive;
+    font-size: 18px;
+    color: #B8A88F;
+    flex-shrink: 0;
+  }
+  .wish-item.checked .wish-title,
+  .wish-item.checked .wish-day {
+    color: #C4B8A4;
+  }
+  .wish-meta {
+    margin-top: 4px;
+    font-size: 12px;
+    color: #B8A88F;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+
+  .all-done {
+    text-align: center;
+    padding: 50px 20px;
+    font-family: "Long Cang", cursive;
+    font-size: 26px;
+    color: #C9A07E;
+    line-height: 1.8;
+  }
+  .empty-hint {
+    text-align: center;
+    padding: 60px 20px;
+    color: #B8A88F;
+    font-size: 15px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    line-height: 1.8;
+  }
+
+  /* 许愿期大数字 */
+  .countdown-wrap {
+    text-align: center;
+    padding: 40px 10px 20px;
+  }
+  .countdown-title {
+    font-family: "Long Cang", cursive;
+    font-size: 26px;
+    color: #5C4A3A;
+  }
+  .countdown-num {
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 80px;
+    color: #E08E6D;
+    line-height: 1.1;
+    margin: 8px 0;
+  }
+  .countdown-sub {
+    font-family: "Long Cang", cursive;
+    font-size: 20px;
+    color: #8A7A66;
+  }
+
+  /* 底部 Tab Bar */
+  .tabbar {
+    position: fixed;
+    bottom: 0; left: 50%;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 420px;
+    background: rgba(250,246,236,0.96);
+    backdrop-filter: blur(10px);
+    border-top: 1px solid rgba(74,63,53,0.08);
+    display: flex;
+    justify-content: space-around;
+    padding: 10px 0 calc(10px + env(safe-area-inset-bottom));
+    z-index: 100;
+  }
+  .tab-btn {
+    flex: 1;
+    text-align: center;
+    padding: 4px 0;
+    cursor: pointer;
+    color: #B8A88F;
+    font-size: 12px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  .tab-btn .icon { font-size: 20px; display: block; margin-bottom: 2px; }
+  .tab-btn.active { color: #C97B54; }
+
+  .fab {
+    position: fixed;
+    bottom: 90px;
+    right: max(28px, calc(50% - 182px));
+    width: 54px; height: 54px;
+    border-radius: 50%;
+    background: #E8A87C;
+    color: #fff;
+    font-size: 28px;
+    border: none;
+    box-shadow: 0 4px 14px rgba(232,168,124,0.4);
+    cursor: pointer;
+    z-index: 99;
+  }
+
+  /* 弹层 */
+  .modal-mask {
+    position: fixed; inset: 0;
+    background: rgba(62,50,40,0.4);
+    z-index: 200;
+    display: none;
+    align-items: flex-end;
+    justify-content: center;
+  }
+  .modal-mask.show { display: flex; }
+  .modal {
+    background: #FBF7EE;
+    width: 100%; max-width: 420px;
+    border-radius: 20px 20px 0 0;
+    padding: 24px;
+    max-height: 85vh;
+    overflow-y: auto;
+  }
+  .modal h3 {
+    margin: 0 0 16px;
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 24px;
+    color: #3E3228;
+  }
+  .form-row { margin-bottom: 14px; }
+  .form-row label {
+    display: block;
+    font-size: 12px;
+    color: #A89880;
+    margin-bottom: 6px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  .form-row input, .form-row select, .form-row textarea {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid rgba(62,50,40,0.15);
+    border-radius: 10px;
+    background: #fff;
+    font-size: 14px;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+    color: #3E3228;
+    outline: none;
+  }
+  .form-row input:focus, .form-row select:focus, .form-row textarea:focus {
+    border-color: #E8A87C;
+  }
+  .form-row textarea { resize: vertical; min-height: 50px; }
+  .btn-row { display: flex; gap: 10px; margin-top: 20px; }
+  .btn {
+    flex: 1;
+    padding: 12px;
+    border-radius: 24px;
+    border: none;
+    font-size: 15px;
+    cursor: pointer;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  .btn-primary { background: #E8A87C; color: #fff; }
+  .btn-ghost { background: transparent; color: #A89880; border: 1px solid rgba(62,50,40,0.15); }
+
+  /* 统计页 */
+  .stat-overview { text-align: center; padding: 20px 0; }
+  .stat-num {
+    font-family: "Ma Shan Zheng", cursive;
+    font-size: 56px;
+    color: #E08E6D;
+  }
+  .stat-label { font-size: 12px; color: #A89880; margin-top: 4px; font-family: -apple-system, sans-serif; }
+  .wish-progress-item {
+    padding: 14px 0;
+    border-bottom: 1px dashed rgba(62,50,40,0.15);
+  }
+  .wish-progress-item .row {
+    display: flex; justify-content: space-between;
+    font-size: 14px; margin-bottom: 6px;
+    font-family: "Long Cang", cursive;
+    font-size: 18px;
+  }
+  .progress-bar {
+    height: 6px;
+    background: rgba(62,50,40,0.08);
+    border-radius: 3px;
+    overflow: hidden;
+  }
+  .progress-bar-fill {
+    height: 100%;
+    background: #C9B89B;
+    border-radius: 3px;
+  }
+
+  .about-line {
+    padding: 16px 0;
+    border-bottom: 1px dashed rgba(62,50,40,0.12);
+    font-size: 15px;
+    display: flex; justify-content: space-between; align-items: center;
+    font-family: -apple-system, "PingFang SC", sans-serif;
+  }
+  .about-line .val { color: #A89880; font-size: 13px; }
+
+  /* 尤加利叶装饰（左下） */
+  .eucalyptus {
+    position: fixed;
+    bottom: 90px; left: max(16px, calc(50% - 194px));
+    width: 70px;
+    opacity: 0.4;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .tab-content { position: relative; z-index: 1; }
+  .section-label {
+    font-size: 13px;
+    color: #A89880;
+    letter-spacing: 2px;
+    margin: 20px 0 4px;
+    font-family: -apple-system, sans-serif;
+  }
+</style>
+</head>
+<body>
+<div class="phone">
+  <div class="tape"></div>
+
+  <header>
+    <div class="date-row">
+      <div>
+        <div class="date-text" id="dateText"></div>
+        <div class="brand-row">My <span class="yr">2027</span> · 岁愿</div>
+      </div>
+      <!-- 手绘小太阳 -->
+      <svg class="sun" viewBox="0 0 60 60" fill="none">
+        <circle cx="30" cy="30" r="10" stroke="#D4A574" stroke-width="2" fill="#F2D8B5"/>
+        <g stroke="#D4A574" stroke-width="2" stroke-linecap="round">
+          <line x1="30" y1="8" x2="30" y2="14"/>
+          <line x1="30" y1="46" x2="30" y2="52"/>
+          <line x1="8" y1="30" x2="14" y2="30"/>
+          <line x1="46" y1="30" x2="52" y2="30"/>
+          <line x1="14.5" y1="14.5" x2="18.5" y2="18.5"/>
+          <line x1="41.5" y1="41.5" x2="45.5" y2="45.5"/>
+          <line x1="45.5" y1="14.5" x2="41.5" y2="18.5"/>
+          <line x1="18.5" y1="41.5" x2="14.5" y2="45.5"/>
+        </g>
+      </svg>
+    </div>
+    <div class="greeting" id="greeting"></div>
+    <div class="year-progress">
+      <span id="yearDayText">第 1 天</span>
+      <div class="year-bar"><div class="year-bar-fill" id="yearBar" style="width:0%"></div></div>
+      <span id="yearPct">0%</span>
+    </div>
+  </header>
+  <hr class="header-divider">
+
+  <!-- 今日 -->
+  <div class="tab-content active" id="tab-today">
+    <div id="todayList"></div>
+  </div>
+
+  <!-- 全部 -->
+  <div class="tab-content" id="tab-all">
+    <div id="allList"></div>
+  </div>
+
+  <!-- 统计 -->
+  <div class="tab-content" id="tab-stats">
+    <div class="stat-overview">
+      <div class="stat-num" id="statRate">--</div>
+      <div class="stat-label">今日打卡完成率</div>
+    </div>
+    <div id="statsList"></div>
+  </div>
+
+  <!-- 我的 -->
+  <div class="tab-content" id="tab-me">
+    <div class="about-line">
+      <span>这一年的心愿</span>
+      <span class="val" id="wishCount">0 条</span>
+    </div>
+    <div class="about-line">
+      <span>数据存储</span>
+      <span class="val">仅本浏览器</span>
+    </div>
+    <div class="about-line" style="cursor:pointer" onclick="exportData()">
+      <span>导出我的数据</span>
+      <span class="val">下载 JSON ›</span>
+    </div>
+    <div class="about-line" style="cursor:pointer" onclick="document.getElementById('importFile').click()">
+      <span>导入数据</span>
+      <span class="val">从 JSON 恢复 ›</span>
+    </div>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importData(event)">
+    <div class="about-line" style="cursor:pointer" onclick="resetData()">
+      <span style="color:#c75450">清空全部数据</span>
+      <span class="val">不可恢复 ›</span>
+    </div>
+    <div style="text-align:center; margin-top:40px; font-size:12px; color:#C4B8A4; line-height:1.8;">
+      My 2027 · 岁愿<br>把日子过成愿望的样子
+    </div>
+  </div>
+
+  <!-- 尤加利叶 -->
+  <svg class="eucalyptus" viewBox="0 0 100 200" fill="none">
+    <path d="M50 195 Q48 140 52 80 Q54 40 50 10" stroke="#8AA88F" stroke-width="2" fill="none"/>
+    <ellipse cx="35" cy="170" rx="10" ry="14" fill="#A8BFA8" transform="rotate(-20 35 170)"/>
+    <ellipse cx="65" cy="150" rx="10" ry="14" fill="#9CB8A0" transform="rotate(15 65 150)"/>
+    <ellipse cx="38" cy="125" rx="9" ry="12" fill="#A8BFA8" transform="rotate(-15 38 125)"/>
+    <ellipse cx="64" cy="100" rx="9" ry="12" fill="#9CB8A0" transform="rotate(18 64 100)"/>
+    <ellipse cx="40" cy="78" rx="8" ry="11" fill="#A8BFA8" transform="rotate(-12 40 78)"/>
+    <ellipse cx="60" cy="55" rx="8" ry="11" fill="#9CB8A0" transform="rotate(15 60 55)"/>
+    <ellipse cx="45" cy="35" rx="7" ry="10" fill="#A8BFA8" transform="rotate(-10 45 35)"/>
+  </svg>
+
+  <button class="fab" onclick="openAdd()">+</button>
+
+  <div class="tabbar">
+    <div class="tab-btn active" data-tab="today" onclick="switchTab('today')">
+      <span class="icon">✿</span>今日
+    </div>
+    <div class="tab-btn" data-tab="all" onclick="switchTab('all')">
+      <span class="icon">☰</span>全部
+    </div>
+    <div class="tab-btn" data-tab="stats" onclick="switchTab('stats')">
+      <span class="icon">◔</span>统计
+    </div>
+    <div class="tab-btn" data-tab="me" onclick="switchTab('me')">
+      <span class="icon">☺</span>我的
+    </div>
+  </div>
+
+  <div class="modal-mask" id="addModal">
+    <div class="modal">
+      <h3>写一个新愿望</h3>
+      <div class="form-row">
+        <label>愿望内容</label>
+        <input id="f_title" placeholder="例：11点前睡觉">
+      </div>
+      <div class="form-row">
+        <label>分类</label>
+        <select id="f_category">
+          <option>健康美丽</option>
+          <option>学习成长</option>
+          <option>职业发展</option>
+          <option>亲密关系</option>
+          <option>宠爱自己</option>
+          <option>记录生活</option>
+          <option>新的体验</option>
+          <option>财务攒钱</option>
+        </select>
+      </div>
+      <div class="form-row">
+        <label>频率</label>
+        <select id="f_period" onchange="onPeriodChange()">
+          <option value="daily">每天</option>
+          <option value="weekly">每周固定几天</option>
+          <option value="once">一次性年度目标</option>
+        </select>
+      </div>
+      <div class="form-row" id="weeklyRow" style="display:none">
+        <label>每周哪几天（点选）</label>
+        <div id="weekdayPicker" style="display:flex; gap:8px; flex-wrap:wrap;"></div>
+      </div>
+      <div class="form-row">
+        <label>目标次数（达到即圆满）</label>
+        <input id="f_target" type="number" placeholder="例：200">
+      </div>
+      <div class="form-row">
+        <label>备注（可选）</label>
+        <textarea id="f_note" placeholder="为什么想做这件事"></textarea>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-ghost" onclick="closeAdd()">取消</button>
+        <button class="btn btn-primary" onclick="saveWish()">记下它</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const STORE_KEY = 'my2027_data_v1';
+const YEAR = 2027;
+
+function todayStr() {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+function loadData() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return JSON.parse(raw);
+  } catch(e) {}
+  return {
+    wishes: [
+      { id: 'w1', title: '11点前睡觉', category: '健康美丽', period: 'daily', target: 200, startDate: `${YEAR}-01-01`, note: '', checkins: {} },
+      { id: 'w2', title: '今天攒50元', category: '财务攒钱', period: 'daily', target: 365, startDate: `${YEAR}-01-01`, note: '', checkins: {} },
+      { id: 'w3', title: '记录3件开心的事', category: '记录生活', period: 'daily', target: 50, startDate: `${YEAR}-01-01`, note: '', checkins: {} },
+      { id: 'w4', title: '读完《人类简史》第3章', category: '学习成长', period: 'once', target: 1, startDate: `${YEAR}-01-01`, note: '', checkins: {} },
+    ]
+  };
+}
+let data = loadData();
+function save() { localStorage.setItem(STORE_KEY, JSON.stringify(data)); }
+
+function yearPhase() {
+  const now = new Date();
+  const start = new Date(YEAR, 0, 1);
+  const end = new Date(YEAR, 11, 31, 23, 59, 59);
+  if (now < start) return 'before';
+  if (now > end) return 'after';
+  return 'during';
+}
+
+function renderHeader() {
+  const now = new Date();
+  const weekDays = ['日','一','二','三','四','五','六'];
+  document.getElementById('dateText').textContent =
+    `${now.getFullYear()}年 ${now.getMonth()+1}月${now.getDate()}日 星期${weekDays[now.getDay()]}`;
+  const h = now.getHours();
+  let greet = '早上好，今天也是新的一天';
+  if (h >= 11 && h < 14) greet = '中午好，记得吃饭';
+  else if (h >= 14 && h < 18) greet = '下午好，喝杯水吧';
+  else if (h >= 18 && h < 23) greet = '晚上好，今天过得怎么样';
+  else if (h >= 23 || h < 5) greet = '夜深了，早点休息';
+  document.getElementById('greeting').textContent = greet;
+
+  const start = new Date(YEAR, 0, 1);
+  const end = new Date(YEAR, 11, 31);
+  const total = Math.round((end - start) / 86400000) + 1;
+  const phase = yearPhase();
+  if (phase === 'before') {
+    const remain = Math.ceil((start - now) / 86400000);
+    document.getElementById('yearDayText').textContent = `距离${YEAR}还有`;
+    document.getElementById('yearPct').textContent = remain + ' 天';
+    document.getElementById('yearBar').style.width = '0%';
+  } else {
+    const dayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+    const passed = Math.floor((dayStart - start) / 86400000) + 1;
+    const clamped = Math.max(0, Math.min(total, passed));
+    document.getElementById('yearDayText').textContent = `今年已过去`;
+    document.getElementById('yearPct').textContent = `${clamped}/365 天`;
+    document.getElementById('yearBar').style.width = (clamped/total*100) + '%';
+  }
+}
+
+function isDueToday(wish, dateStr) {
+  if (wish.startDate && dateStr < wish.startDate) return false;
+  if (wish.period === 'daily') return true;
+  if (wish.period === 'once') return true;
+  if (wish.period === 'weekly') {
+    const d = new Date(dateStr);
+    return (wish.weeklyDays || [1,3,5]).includes(d.getDay());
+  }
+  return false;
+}
+
+function renderToday() {
+  const list = document.getElementById('todayList');
+  const today = todayStr();
+  const phase = yearPhase();
+
+  if (phase === 'before') {
+    const remain = Math.ceil((new Date(YEAR,0,1) - new Date()) / 86400000);
+    let html = `
+      <div class="countdown-wrap">
+        <div class="countdown-title">愿望已经写好啦</div>
+        <div class="countdown-num">${remain}</div>
+        <div class="countdown-sub">天后，一起翻开 ${YEAR}</div>
+      </div>`;
+    if (data.wishes.length > 0) {
+      html += `<div class="section-label">已写好的愿望</div>`;
+      data.wishes.slice(0, 8).forEach(w => {
+        html += `
+          <div class="wish-item" style="opacity:0.75">
+            <div class="check-circle" style="cursor:default">·</div>
+            <div class="wish-body">
+              <div class="wish-row">
+                <div class="wish-title">${escapeHtml(w.title)}</div>
+              </div>
+            </div>
+          </div>`;
+      });
+    } else {
+      html += '<div class="empty-hint">点右下角 + 写下第一个愿望吧</div>';
+    }
+    list.innerHTML = html;
+    return;
+  }
+
+  const due = data.wishes.filter(w => isDueToday(w, today));
+  if (due.length === 0) {
+    list.innerHTML = '<div class="empty-hint">今天没有安排<br>点右下角 + 加一个愿望吧 ✿</div>';
+    return;
+  }
+  let doneCount = 0;
+  let html = '';
+  due.forEach(w => {
+    const done = !!w.checkins[today];
+    if (done) doneCount++;
+    const progress = Object.keys(w.checkins).length;
+    html += `
+      <div class="wish-item ${done?'checked':''}">
+        <div class="check-circle ${done?'checked':''}" onclick="toggleCheck('${w.id}')">✓</div>
+        <div class="wish-body">
+          <div class="wish-row">
+            <div class="wish-title">${escapeHtml(w.title)}</div>
+            <div class="wish-day">${progress>0?'第 '+progress+' 天':''}</div>
+          </div>
+        </div>
+      </div>`;
+  });
+  if (doneCount === due.length) {
+    html = `<div class="all-done">今天的事都做完了<br>好好犒劳自己吧 ◡</div>` + html;
+  }
+  list.innerHTML = html;
+}
+
+function toggleCheck(id) {
+  const wish = data.wishes.find(w => w.id === id);
+  if (!wish) return;
+  const today = todayStr();
+  if (wish.checkins[today]) delete wish.checkins[today];
+  else wish.checkins[today] = { ts: Date.now() };
+  save();
+  renderToday();
+  renderStats();
+}
+
+function renderAll() {
+  const list = document.getElementById('allList');
+  if (data.wishes.length === 0) {
+    list.innerHTML = '<div class="empty-hint">还没有愿望<br>点右下角 + 写下第一个吧</div>';
+    return;
+  }
+  const groups = {};
+  data.wishes.forEach(w => {
+    if (!groups[w.category]) groups[w.category] = [];
+    groups[w.category].push(w);
+  });
+  let html = '';
+  Object.keys(groups).forEach(cat => {
+    html += `<div class="section-label">${escapeHtml(cat)}</div>`;
+    groups[cat].forEach(w => {
+      const progress = Object.keys(w.checkins).length;
+      const pct = Math.min(100, Math.round(progress / w.target * 100));
+      html += `
+        <div class="wish-item">
+          <div class="wish-body">
+            <div class="wish-row">
+              <div class="wish-title">${escapeHtml(w.title)}</div>
+              <div class="wish-day">${progress}/${w.target}</div>
+            </div>
+            <div class="progress-bar" style="margin-top:8px"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+            <div style="margin-top:6px;font-size:12px;color:#c75450;font-family:-apple-system,sans-serif;cursor:pointer" onclick="deleteWish('${w.id}')">删除</div>
+          </div>
+        </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function deleteWish(id) {
+  if (!confirm('确定删掉这个愿望吗？')) return;
+  data.wishes = data.wishes.filter(w => w.id !== id);
+  save();
+  renderAll(); renderToday(); renderStats();
+}
+
+function renderStats() {
+  const today = todayStr();
+  const due = data.wishes.filter(w => isDueToday(w, today));
+  const done = due.filter(w => w.checkins[today]).length;
+  const rate = due.length ? Math.round(done/due.length*100) : 0;
+  document.getElementById('statRate').textContent = due.length ? rate + '%' : '--';
+  document.getElementById('wishCount').textContent = data.wishes.length + ' 条';
+  let html = '';
+  data.wishes.forEach(w => {
+    const progress = Object.keys(w.checkins).length;
+    const pct = Math.min(100, Math.round(progress / w.target * 100));
+    html += `
+      <div class="wish-progress-item">
+        <div class="row">
+          <span>${escapeHtml(w.title)}</span>
+          <span style="color:#A8988F;font-size:14px">${progress}/${w.target}</span>
+        </div>
+        <div class="progress-bar"><div class="progress-bar-fill" style="width:${pct}%"></div></div>
+      </div>`;
+  });
+  document.getElementById('statsList').innerHTML = html;
+}
+
+function openAdd() {
+  document.getElementById('addModal').classList.add('show');
+  buildWeekdayPicker();
+}
+function closeAdd() { document.getElementById('addModal').classList.remove('show'); }
+let selectedDays = [1,3,5];
+function buildWeekdayPicker() {
+  const names = ['日','一','二','三','四','五','六'];
+  const box = document.getElementById('weekdayPicker');
+  box.innerHTML = '';
+  names.forEach((n, i) => {
+    const on = selectedDays.includes(i);
+    box.innerHTML += `<div onclick="toggleDay(${i})" style="width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;background:${on?'#E8A87C':'#fff'};color:${on?'#fff':'#A89880'};border:1px solid ${on?'#E8A87C':'rgba(62,50,40,0.15)'}">${n}</div>`;
+  });
+}
+function toggleDay(i) {
+  if (selectedDays.includes(i)) selectedDays = selectedDays.filter(d => d !== i);
+  else selectedDays.push(i);
+  buildWeekdayPicker();
+}
+function onPeriodChange() {
+  document.getElementById('weeklyRow').style.display =
+    document.getElementById('f_period').value === 'weekly' ? 'block' : 'none';
+}
+function saveWish() {
+  const title = document.getElementById('f_title').value.trim();
+  if (!title) { alert('愿望得先有个名字呀'); return; }
+  const target = parseInt(document.getElementById('f_target').value) || 1;
+  data.wishes.push({
+    id: 'w' + Date.now(),
+    title,
+    category: document.getElementById('f_category').value,
+    period: document.getElementById('f_period').value,
+    target,
+    startDate: `${YEAR}-01-01`,
+    note: document.getElementById('f_note').value.trim(),
+    weeklyDays: selectedDays,
+    checkins: {}
+  });
+  save();
+  closeAdd();
+  document.getElementById('f_title').value = '';
+  document.getElementById('f_note').value = '';
+  document.getElementById('f_target').value = '';
+  renderToday(); renderAll(); renderStats();
+  switchTab('today');
+}
+
+function exportData() {
+  const blob = new Blob([JSON.stringify(data, null, 2)], {type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = `my2027-backup-${todayStr()}.json`;
+  a.click();
+}
+function importData(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = ev => {
+    try {
+      data = JSON.parse(ev.target.result);
+      save(); renderToday(); renderAll(); renderStats();
+      alert('导入成功');
+    } catch(err) { alert('文件格式不对'); }
+  };
+  reader.readAsText(file);
+}
+function resetData() {
+  if (!confirm('真的要清空所有愿望和打卡记录吗？此操作不可恢复')) return;
+  localStorage.removeItem(STORE_KEY);
+  data = { wishes: [] };
+  save(); renderToday(); renderAll(); renderStats();
+}
+
+function switchTab(tab) {
+  document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+  document.getElementById('tab-' + tab).classList.add('active');
+  document.querySelector(`.tab-btn[data-tab="${tab}"]`).classList.add('active');
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+renderHeader();
+renderToday();
+renderAll();
+renderStats();
+</script>
+</body>
+</html>
